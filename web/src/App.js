@@ -1,25 +1,54 @@
+import classNames from 'classnames';
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Dropzone from 'react-dropzone';
 import './App.css';
 
+// TODO: Move uploader to its own component
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      files: [],
+    }
+  }
+
+  onDrop = (files) => {
+    this.setState({
+      files: files.map(file => Object.assign(file, {
+        preview: URL.createObjectURL(file)
+      }))
+    });
+  }
+
   render() {
+    const {files} = this.state;
+
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <Dropzone onDrop={this.onDrop}>
+        {({getRootProps, getInputProps, isDragActive}) => {
+          return (
+            <div
+              {...getRootProps()}
+              className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
+            >
+              <input {...getInputProps()} />
+              {
+                isDragActive ?
+                  <p>Drop files here...</p> :
+                  <p>Try dropping some files here, or click to select files to upload.</p>
+              }
+            </div>
+          )
+        }}
+      </Dropzone>
+      {
+        files.map(file => (
+              <img
+                src={file.preview}
+              />
+        ))}
       </div>
     );
   }
