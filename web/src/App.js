@@ -14,6 +14,14 @@ class App extends Component {
   }
 
   onDrop = (files) => {
+    var formData = new FormData();
+    formData.append('the_file', files[0]);
+
+    fetch('http://127.0.0.1:5000/upload', {
+      method: 'POST',
+      body: formData
+    })
+
     this.setState({
       files: files.map(file => Object.assign(file, {
         preview: URL.createObjectURL(file)
@@ -45,9 +53,9 @@ class App extends Component {
       </Dropzone>
       {
         files.map(file => (
-              <img
-                src={file.preview}
-              />
+          <img
+            src={file.preview}
+          />
         ))}
       </div>
     );
