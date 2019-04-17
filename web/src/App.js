@@ -17,7 +17,7 @@ class App extends Component {
     var formData = new FormData();
     formData.append('the_file', files[0]);
 
-    fetch('http://127.0.0.1:5000/upload', {
+    fetch('http://localhost:5000/upload', {
       method: 'POST',
       body: formData
     })
@@ -53,9 +53,9 @@ class App extends Component {
       </Dropzone>
       {
         files.map(file => (
-          <img
-            src={file.preview}
-          />
+              <img
+                src={file.preview}
+              />
         ))}
       </div>
     );
