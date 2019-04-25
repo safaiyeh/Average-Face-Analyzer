@@ -8,6 +8,7 @@ import os.path
 
 
 def analyze(img):
+    outputArray = []
     detector = dlib.get_frontal_face_detector()
     predictor_path = 'shape_predictor_68_face_landmarks.dat'
     predictor = dlib.shape_predictor(predictor_path)
@@ -37,36 +38,48 @@ def analyze(img):
         # loop over the (x, y)-coordinates for the facial landmarks
         # and draw them on the image
         index = 1
-        outputArray = []
+        coordsArray = []
         for (x, y) in shape:
             # print("Point: " + str(index) + "   " +
             #      "x: " + str(x) + " ,y: " + str(y))
             index += 1
             coords = tuple([x, y])
-            outputArray.append(coords)
+            coordsArray.append(coords)
             
             cv2.circle(image, (x, y), 1, (0, 0, 255), -1)
 
         distances = [((x1 - x2)**2 + (y1 - y2)**2)**0.5
-                     for (x1, y1) in outputArray for (x2, y2) in outputArray]
+                     for (x1, y1) in coordsArray for (x2, y2) in coordsArray]
         sum_of_distances = sum(
             x1/x2 for x1 in distances for x2 in distances if x1 != x2 and x2 != 0)
-        point_37=outputArray[36]
-        point_40=outputArray[39]
+        point_37=coordsArray[36]
+        point_40=coordsArray[39]
         left_eye_length = ((point_37[0] - point_40[0])**2 + (point_37[1] - point_40[1])**2)**0.5
         print(f"Left eye length is: {left_eye_length}")
 
-        right_eye_length = calc_distance(outputArray,43,46)
-        eye_distance = calc_distance(outputArray,40,43)
-        nose_length = calc_distance(outputArray,28,34)
-        left_eyebrow = calc_distance(outputArray,18,22)
-        right_eyebrow = calc_distance(outputArray,23,27)
+        right_eye_length = calc_distance(coordsArray,43,46)
+        eye_distance = calc_distance(coordsArray,40,43)
+        nose_length = calc_distance(coordsArray,28,34)
+        left_eyebrow = calc_distance(coordsArray,18,22)
+        right_eyebrow = calc_distance(coordsArray,23,27)
         print(f"Right eye length is: {right_eye_length}")
         print(f"Distance between eyes: {eye_distance}")
         print(f"Nose length is: {nose_length}")
         print(f"Left eyebrow is: {left_eyebrow}")
         print(f"Right eyebrow is: {right_eyebrow}")
-        print(sum_of_distances/1000000)
+        
+        score = sum_of_distances/1000000
+        print(score)
+
+
+        
+        outputArray.append(score)
+        outputArray.append(right_eye_length)
+        outputArray.append(left_eye_length)
+        outputArray.append(eye_distance)
+        outputArray.append(right_eyebrow)
+        outputArray.append(left_eyebrow)
+        
 
     # return cv2.imshow("Output", image)
     print(outputArray)

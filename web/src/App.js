@@ -18,8 +18,12 @@ class App extends Component {
     formData.append('the_file', files[0]);
 
     fetch('http://localhost:5000/upload', {
+    //fetch('https://average-face-analyzer.herokuapp.com/upload', {
       method: 'POST',
       body: formData
+    }).then(response => {
+      console.log("hello");
+      console.log(response);
     })
 
     this.setState({

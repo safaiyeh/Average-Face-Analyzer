@@ -2,8 +2,10 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 from flask import render_template
+#from waitress import serve
 import analyzer as a
 import os
+
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'images\\')
@@ -15,7 +17,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return render_template('upload.html')
+    return '<h1>Hello, this is the Flask portion of the app<h1>'
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -29,8 +31,9 @@ def upload_file():
         # Add analyze code
         output = a.analyze(destination)
         
-    return str(output)
+    return "output"
 
 
 if __name__ == '__main__':
     app.run()
+    #serve(app, host='0.0.0.0', port=9999)
