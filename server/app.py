@@ -31,7 +31,7 @@ def upload_file():
         # Add analyze code
         output = a.analyze(destination)
         
-    return "output"
+    return render_template("report.html",output_array = output)
 
 
 if __name__ == '__main__':
