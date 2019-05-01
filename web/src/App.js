@@ -10,7 +10,7 @@ class App extends Component {
 
     this.state = {
       files: [],
-      values: 'hi'
+      values: []
     }
   }
 
@@ -19,16 +19,13 @@ class App extends Component {
     formData.append('the_file', files[0]);
 
     fetch('http://localhost:5000/upload', {
-    //fetch('https://average-face-analyzer.herokuapp.com/upload', {
       method: 'POST',
       body: formData
-    }).then(function(response) {
-      console.log('hello');
+    }).then((response) => {
       return response.json();
     })
-    .then(function(myJson) {
-      console.log(myJson);
-      this.setState({ values: 'got it' })
+    .then((myJson) => {
+      this.setState({ values: myJson })
     });
 
     this.setState({
@@ -40,10 +37,11 @@ class App extends Component {
 
   render() {
     const {files, values} = this.state;
+    console.log(values);
 
     return (
       <div className="App">
-      <h1>{values}</h1>
+      <h1>{values.toString()}</h1>
       <Dropzone onDrop={this.onDrop}>
         {({getRootProps, getInputProps, isDragActive}) => {
           return (
@@ -63,9 +61,9 @@ class App extends Component {
       </Dropzone>
       {
         files.map(file => (
-              <img
-                src={file.preview}
-              />
+          <img
+            src={file.preview}
+          />
         ))}
       </div>
     );
