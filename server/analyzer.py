@@ -62,11 +62,15 @@ def analyze(img):
         nose_length = calc_distance(coordsArray,28,34)
         left_eyebrow = calc_distance(coordsArray,18,22)
         right_eyebrow = calc_distance(coordsArray,23,27)
+        mouth_length = calc_distance(coordsArray,49,55)
+        
         print(f"Right eye length is: {right_eye_length}")
         print(f"Distance between eyes: {eye_distance}")
         print(f"Nose length is: {nose_length}")
         print(f"Left eyebrow is: {left_eyebrow}")
         print(f"Right eyebrow is: {right_eyebrow}")
+        print(f"Nose length is: {nose_length}")
+        print(f"Mouth length is: {mouth_length}")
         
         score = sum_of_distances/1000000
         print(score)
@@ -79,11 +83,18 @@ def analyze(img):
         outputArray.append(eye_distance)
         outputArray.append(right_eyebrow)
         outputArray.append(left_eyebrow)
+        outputArray.append(nose_length)
+        outputArray.append(mouth_length)
+
         
 
     # return cv2.imshow("Output", image)
     print(outputArray)
-    return outputArray
+    if not outputArray:
+        return "Could not process image"
+    else:
+        return outputArray
+    #return outputArray
 
 def calc_distance(array,p1,p2):
         point_a = array[p1-1]
