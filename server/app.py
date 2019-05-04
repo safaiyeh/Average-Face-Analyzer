@@ -6,6 +6,7 @@ from flask import render_template
 import json
 import analyzer as a
 import os
+import base64
 
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -30,8 +31,11 @@ def upload_file():
         f.save(os.path.join(app.config['UPLOAD'], f.filename))
         # Add analyze code
         output = a.analyze(destination)
+        #output = output.decode("utf-8")
+        output = output.tobytes()
         
-    return json.dumps(output)
+    #return json.dumps(output.encode()
+    return output
 
 
 if __name__ == '__main__':

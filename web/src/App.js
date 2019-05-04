@@ -23,9 +23,11 @@ class App extends Component {
       body: formData
     }).then((response) => {
       return response.json();
+      //console.log(response.body.json());
     })
     .then((myJson) => {
       this.setState({ values: myJson })
+      console.log(myJson);
     });
 
     this.setState({
@@ -36,8 +38,13 @@ class App extends Component {
   }
 
   render() {
+    var image = new Image();
+    //image.src = 'data:image/jpg;base64,' + values;
+    image.src = values;
+    document.body.appendChild(image);
     const {files, values} = this.state;
-    console.log(values);
+    console.log (values);
+    //console.log(image);
 
     return (
       <div className="App">

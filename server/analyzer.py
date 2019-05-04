@@ -5,6 +5,9 @@ import imutils
 import dlib
 import cv2
 import os.path
+import base64
+from PIL import Image
+
 
 
 def analyze(img):
@@ -85,16 +88,25 @@ def analyze(img):
         outputArray.append(left_eyebrow)
         outputArray.append(nose_length)
         outputArray.append(mouth_length)
+        #outputArray.append(image)
+
+    
+    encoded_image = Image.fromarray(image)
+    #encoded_image = encoded_image.tobytes()
+    #encoded_image = base64.b64encode(encoded_image.getValue())
+    #encoded_image = cv2.imencode('.jpg',image)
 
         
 
     # return cv2.imshow("Output", image)
-    print(outputArray)
-    if not outputArray:
-        return "Could not process image"
-    else:
-        return outputArray
-    #return outputArray
+    #print(outputArray)
+    #if not outputArray:
+    #    return "Could not process image"
+    #else:
+    #    cv2.imshow("Output",image)
+    #    cv2.waitKey(0)
+    #    return outputArray
+    return encoded_image
 
 def calc_distance(array,p1,p2):
         point_a = array[p1-1]
