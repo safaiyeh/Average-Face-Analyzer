@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { Component } from 'react';
 import Dropzone from 'react-dropzone';
 import './App.css';
+import firebase from 'firebase'
 
 // TODO: Move uploader to its own component
 class App extends Component {
@@ -12,6 +13,15 @@ class App extends Component {
       files: [],
       values: []
     }
+    
+    var firebaseConfig = {
+      apiKey: "AIzaSyDlGTPTdJbPAMfYU3tDae4xyQPa2Ib9hV8",
+      authDomain: "cs161-faceid.firebaseapp.com",
+      databaseURL: "https://cs161-faceid.firebaseio.com",
+      projectId: "cs161-faceid",
+      storageBucket: "cs161-faceid.appspot.com",
+    };
+    firebase.initializeApp(firebaseConfig)
   }
 
   onDrop = (files) => {
@@ -27,7 +37,19 @@ class App extends Component {
     })
     .then((myJson) => {
       this.setState({ values: myJson })
-      console.log(myJson);
+      var currentsum = 0
+      myJson.forEach(value => {
+        currentsum+=value
+      })
+      firebase.database().ref('distance').once('value').then(snapshot => {
+        var newsum = snapshot.val().sum
+        var newtotal = snapshot.val().total
+        firebase.database().ref('distance').set({
+          total: newtotal+1,
+          sum: newsum+currentsum
+        })
+        var averageOfDatabase = (newsum+currentsum) /(newtotal+1)
+        })
     });
 
     this.setState({
