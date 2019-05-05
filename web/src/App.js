@@ -60,16 +60,17 @@ class App extends Component {
   }
 
   render() {
-    var image = new Image();
+    //var image = new Image();
     //image.src = 'data:image/jpg;base64,' + values;
-    image.src = values;
-    document.body.appendChild(image);
+    //image.src = values;
+    //document.body.appendChild(image);
     const {files, values} = this.state;
-    console.log (values);
+    console.log (files);
     //console.log(image);
 
     return (
-      <div className="App">
+      <div className="App" id="header">
+      <a id="logo">Average Face Analyzer</a>
       <h1>{values.toString()}</h1>
       <Dropzone onDrop={this.onDrop}>
         {({getRootProps, getInputProps, isDragActive}) => {
@@ -79,11 +80,13 @@ class App extends Component {
               className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
             >
               <input {...getInputProps()} />
+              <ul id="menu">
               {
                 isDragActive ?
-                  <p>Drop files here...</p> :
-                  <p>Try dropping some files here, or click to select files to upload.</p>
+                  <li><a><span>Drop files here...</span></a></li> :
+                  <li><a><span>Click Here or drag your image!</span></a></li>
               }
+              </ul>
             </div>
           )
         }}
