@@ -30,8 +30,9 @@ def upload_file():
         f.save(os.path.join(app.config['UPLOAD'], f.filename))
         # Add analyze code
         output = a.analyze(destination)
+        print(output)
 
-    return json.dumps(output)
+    return output
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ class App extends Component {
     this.state = {
       files: [],
       values: [],
+      cv2Image: '',
       average: 0,
       deviation: 0,
       sum:0
@@ -40,9 +41,9 @@ class App extends Component {
     })
     .then((myJson) => {
       console.log(myJson)
-      this.setState({ values: myJson })
+      this.setState({ values: myJson.data, cv2Image: myJson.photo })
       var currentsum = 0
-      myJson.forEach(value => {
+      myJson.data.forEach(value => {
         currentsum+=value
       })
       firebase.database().ref('distance').once('value').then(snapshot => {
@@ -76,7 +77,7 @@ class App extends Component {
     //image.src = 'data:image/jpg;base64,' + values;
     //image.src = values;
     //document.body.appendChild(image);
-    const {files, values} = this.state;
+    const {files, values, cv2Image} = this.state;
     //console.log (files);
     //console.log(image);
 
@@ -104,9 +105,12 @@ class App extends Component {
       </Dropzone>
       {
         files.map(file => (
+          <div>
           <img
             src={file.preview}
           />
+          <img src={`data:image/jpeg;base64,${cv2Image.substring(2, cv2Image.length - 1)}`} />
+          </div>
         ))}
         <h1>Your Number: {parseInt(this.state.sum)}</h1>
         <h1>The Average Is: {this.state.average}</h1>

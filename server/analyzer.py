@@ -1,10 +1,11 @@
 from imutils import face_utils
-import numpy as np
-import argparse
+from PIL import Image
+from io import BytesIO
+import base64
 import imutils
 import dlib
 import cv2
-import os.path
+import json
 
 
 def analyze(img):
@@ -88,10 +89,18 @@ def analyze(img):
 
     # return cv2.imshow("Output", image)
     print(outputArray)
+    image = Image.fromarray(image)
+    buff = BytesIO()
+    image.save(buff, format="JPEG")
+    img_str = base64.b64encode(buff.getvalue())
+
     if not outputArray:
         return "Could not process image"
     else:
-        return outputArray
+        return json.dumps({
+            'photo': str(img_str),
+            'data': outputArray
+        })
     # return outputArray
 
 
