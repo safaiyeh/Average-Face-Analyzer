@@ -11,7 +11,10 @@ class App extends Component {
 
     this.state = {
       files: [],
-      values: []
+      values: [],
+      average: 0,
+      deviation: 0,
+      sum:0
     }
     
     var firebaseConfig = {
@@ -32,10 +35,11 @@ class App extends Component {
       method: 'POST',
       body: formData
     }).then((response) => {
-      return response.json();
+      return response.json()
       //console.log(response.body.json());
     })
     .then((myJson) => {
+      console.log(myJson)
       this.setState({ values: myJson })
       var currentsum = 0
       myJson.forEach(value => {
@@ -44,11 +48,19 @@ class App extends Component {
       firebase.database().ref('distance').once('value').then(snapshot => {
         var newsum = snapshot.val().sum
         var newtotal = snapshot.val().total
+        var all = snapshot.val().all
         firebase.database().ref('distance').set({
           total: newtotal+1,
           sum: newsum+currentsum
         })
+        firebase.database().ref('all').push(currentsum)
         var averageOfDatabase = (newsum+currentsum) /(newtotal+1)
+        var standarDiv = 0
+        for (var key in all){
+          standarDiv += (all[key]-averageOfDatabase)^2
+        }
+        standarDiv = standarDiv / newtotal
+        this.setState({average: averageOfDatabase,deviation: standarDiv, sum:currentsum})
         })
     });
 
@@ -65,13 +77,12 @@ class App extends Component {
     //image.src = values;
     //document.body.appendChild(image);
     const {files, values} = this.state;
-    console.log (files);
+    //console.log (files);
     //console.log(image);
 
     return (
       <div className="App" id="header">
       <a id="logo">Average Face Analyzer</a>
-      <h1>{values.toString()}</h1>
       <Dropzone onDrop={this.onDrop}>
         {({getRootProps, getInputProps, isDragActive}) => {
           return (
@@ -97,6 +108,9 @@ class App extends Component {
             src={file.preview}
           />
         ))}
+        <h1>Your Number: {parseInt(this.state.sum)}</h1>
+        <h1>The Average Is: {this.state.average}</h1>
+        <h1>You are {(this.state.average-this.state.sum)/this.state.deviation} Standard Deviations away from average</h1>
       </div>
     );
   }

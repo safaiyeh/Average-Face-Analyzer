@@ -2,12 +2,10 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 from flask import render_template
-#from waitress import serve
+# from waitress import serve
 import json
 import analyzer as a
 import os
-import base64
-
 
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_FOLDER = os.path.join(APP_ROOT, 'images')
@@ -21,23 +19,21 @@ CORS(app)
 def index():
     return '<h1>Hello, this is the Flask portion of the app<h1>'
 
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         f = request.files['the_file']
 
         destination = os.path.join(app.config['UPLOAD'], f.filename)
-        
+
         f.save(os.path.join(app.config['UPLOAD'], f.filename))
         # Add analyze code
         output = a.analyze(destination)
-        #output = output.decode("utf-8")
-        output = output.tobytes()
-        
-    #return json.dumps(output.encode()
-    return output
+
+    return json.dumps(output)
 
 
 if __name__ == '__main__':
     app.run()
-    #serve(app, host='0.0.0.0', port=9999)
+    # serve(app, host='0.0.0.0', port=9999)

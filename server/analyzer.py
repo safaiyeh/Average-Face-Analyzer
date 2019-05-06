@@ -5,9 +5,6 @@ import imutils
 import dlib
 import cv2
 import os.path
-import base64
-from PIL import Image
-
 
 
 def analyze(img):
@@ -48,25 +45,27 @@ def analyze(img):
             index += 1
             coords = tuple([x, y])
             coordsArray.append(coords)
-            
+
             cv2.circle(image, (x, y), 1, (0, 0, 255), -1)
 
-        distances = [((x1 - x2)**2 + (y1 - y2)**2)**0.5
+        distances = [((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
                      for (x1, y1) in coordsArray for (x2, y2) in coordsArray]
         sum_of_distances = sum(
-            x1/x2 for x1 in distances for x2 in distances if x1 != x2 and x2 != 0)
-        point_37=coordsArray[36]
-        point_40=coordsArray[39]
-        left_eye_length = ((point_37[0] - point_40[0])**2 + (point_37[1] - point_40[1])**2)**0.5
+            x1 / x2 for x1 in distances for x2 in distances if
+            x1 != x2 and x2 != 0)
+        point_37 = coordsArray[36]
+        point_40 = coordsArray[39]
+        left_eye_length = ((point_37[0] - point_40[0]) ** 2 + (
+                    point_37[1] - point_40[1]) ** 2) ** 0.5
         print(f"Left eye length is: {left_eye_length}")
 
-        right_eye_length = calc_distance(coordsArray,43,46)
-        eye_distance = calc_distance(coordsArray,40,43)
-        nose_length = calc_distance(coordsArray,28,34)
-        left_eyebrow = calc_distance(coordsArray,18,22)
-        right_eyebrow = calc_distance(coordsArray,23,27)
-        mouth_length = calc_distance(coordsArray,49,55)
-        
+        right_eye_length = calc_distance(coordsArray, 43, 46)
+        eye_distance = calc_distance(coordsArray, 40, 43)
+        nose_length = calc_distance(coordsArray, 28, 34)
+        left_eyebrow = calc_distance(coordsArray, 18, 22)
+        right_eyebrow = calc_distance(coordsArray, 23, 27)
+        mouth_length = calc_distance(coordsArray, 49, 55)
+
         print(f"Right eye length is: {right_eye_length}")
         print(f"Distance between eyes: {eye_distance}")
         print(f"Nose length is: {nose_length}")
@@ -74,12 +73,10 @@ def analyze(img):
         print(f"Right eyebrow is: {right_eyebrow}")
         print(f"Nose length is: {nose_length}")
         print(f"Mouth length is: {mouth_length}")
-        
-        score = sum_of_distances/1000000
+
+        score = sum_of_distances / 1000000
         print(score)
 
-
-        
         outputArray.append(score)
         outputArray.append(right_eye_length)
         outputArray.append(left_eye_length)
@@ -88,29 +85,19 @@ def analyze(img):
         outputArray.append(left_eyebrow)
         outputArray.append(nose_length)
         outputArray.append(mouth_length)
-        #outputArray.append(image)
-
-    
-    encoded_image = Image.fromarray(image)
-    #encoded_image = encoded_image.tobytes()
-    #encoded_image = base64.b64encode(encoded_image.getValue())
-    #encoded_image = cv2.imencode('.jpg',image)
-
-        
 
     # return cv2.imshow("Output", image)
-    #print(outputArray)
-    #if not outputArray:
-    #    return "Could not process image"
-    #else:
-    #    cv2.imshow("Output",image)
-    #    cv2.waitKey(0)
-    #    return outputArray
-    return encoded_image
+    print(outputArray)
+    if not outputArray:
+        return "Could not process image"
+    else:
+        return outputArray
+    # return outputArray
 
-def calc_distance(array,p1,p2):
-        point_a = array[p1-1]
-        point_b = array[p2-1]
-        distance = ((point_a[0] - point_b[0])**2 +
-                    (point_a[1] - point_b[1])**2)**0.5
-        return distance
+
+def calc_distance(array, p1, p2):
+    point_a = array[p1 - 1]
+    point_b = array[p2 - 1]
+    distance = ((point_a[0] - point_b[0]) ** 2 +
+                (point_a[1] - point_b[1]) ** 2) ** 0.5
+    return distance
