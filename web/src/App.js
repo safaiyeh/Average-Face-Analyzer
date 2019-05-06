@@ -45,23 +45,27 @@ class App extends Component {
       myJson.forEach(value => {
         currentsum+=value
       })
+      var standarDiv = 0
+      var all = []
+      var averageOfDatabase =0;
+
       firebase.database().ref('distance').once('value').then(snapshot => {
-        var newsum = snapshot.val().sum
-        var newtotal = snapshot.val().total
-        var all = snapshot.val().all
+        var databasesum = snapshot.val().sum
+        var databasetotal = snapshot.val().total
         firebase.database().ref('distance').set({
-          total: newtotal+1,
-          sum: newsum+currentsum
+          total: databasetotal+1,
+          sum: databasesum+currentsum
+        })
+        averageOfDatabase = (databasesum+currentsum) /(databasetotal+1)
+        firebase.database().ref('all').once('value').then(snapshot => {
+          for (var key in snapshot.val()){
+            standarDiv += Math.pow(snapshot.val()[key]-averageOfDatabase,2)
+          }
+          standarDiv = standarDiv / databasetotal
+          this.setState({average: averageOfDatabase, deviation: standarDiv, sum:currentsum})
+        })
         })
         firebase.database().ref('all').push(currentsum)
-        var averageOfDatabase = (newsum+currentsum) /(newtotal+1)
-        var standarDiv = 0
-        for (var key in all){
-          standarDiv += (all[key]-averageOfDatabase)^2
-        }
-        standarDiv = standarDiv / newtotal
-        this.setState({average: averageOfDatabase,deviation: standarDiv, sum:currentsum})
-        })
     });
 
     this.setState({
