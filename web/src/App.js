@@ -114,7 +114,7 @@ class App extends Component {
           <img
             src={file.preview}
           />
-          <img src={`data:image/jpeg;base64,${cv2Image.substring(2, cv2Image.length - 1)}`} />
+          {this.state.isLoading ? null :<img src={`data:image/jpeg;base64,${cv2Image.substring(2, cv2Image.length - 1)}`} />}
           </div>
         ))}
         {this.state.isLoading ? 
