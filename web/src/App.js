@@ -15,7 +15,8 @@ class App extends Component {
       cv2Image: '',
       average: 0,
       deviation: 0,
-      sum:0
+      sum:0,
+      isLoading: false
     }
     
     var firebaseConfig = {
@@ -29,9 +30,9 @@ class App extends Component {
   }
 
   onDrop = (files) => {
+    this.setState({isLoading: true})
     var formData = new FormData();
     formData.append('the_file', files[0]);
-
     fetch('http://localhost:5000/upload', {
       method: 'POST',
       body: formData
@@ -46,23 +47,27 @@ class App extends Component {
       myJson.data.forEach(value => {
         currentsum+=value
       })
+      var standarDiv = 0
+      var all = []
+      var averageOfDatabase =0;
+
       firebase.database().ref('distance').once('value').then(snapshot => {
-        var newsum = snapshot.val().sum
-        var newtotal = snapshot.val().total
-        var all = snapshot.val().all
+        var databasesum = snapshot.val().sum
+        var databasetotal = snapshot.val().total
         firebase.database().ref('distance').set({
-          total: newtotal+1,
-          sum: newsum+currentsum
+          total: databasetotal+1,
+          sum: databasesum+currentsum
+        })
+        averageOfDatabase = (databasesum+currentsum) /(databasetotal+1)
+        firebase.database().ref('all').once('value').then(snapshot => {
+          for (var key in snapshot.val()){
+            standarDiv += Math.pow(snapshot.val()[key]-averageOfDatabase,2)
+          }
+          standarDiv = standarDiv / databasetotal
+          this.setState({average: averageOfDatabase, deviation: standarDiv, sum:currentsum,isLoading:false})
+        })
         })
         firebase.database().ref('all').push(currentsum)
-        var averageOfDatabase = (newsum+currentsum) /(newtotal+1)
-        var standarDiv = 0
-        for (var key in all){
-          standarDiv += (all[key]-averageOfDatabase)^2
-        }
-        standarDiv = standarDiv / newtotal
-        this.setState({average: averageOfDatabase,deviation: standarDiv, sum:currentsum})
-        })
     });
 
     this.setState({
@@ -112,9 +117,13 @@ class App extends Component {
           <img src={`data:image/jpeg;base64,${cv2Image.substring(2, cv2Image.length - 1)}`} />
           </div>
         ))}
+        {this.state.isLoading ? 
+        <div class="loader">Loading...</div> :
+        this.state.sum == 0 ? null:
+        <div>
         <h1>Your Number: {parseInt(this.state.sum)}</h1>
-        <h1>The Average Is: {this.state.average}</h1>
-        <h1>You are {(this.state.average-this.state.sum)/this.state.deviation} Standard Deviations away from average</h1>
+        <h1>The Average Is: {parseInt(this.state.average)}</h1>
+        <h1>You are {Math.abs((this.state.average-this.state.sum)/this.state.deviation)} Standard Deviations away from average</h1></div>}
       </div>
     );
   }
