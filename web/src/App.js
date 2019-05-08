@@ -16,7 +16,9 @@ class App extends Component {
       average: 0,
       deviation: 0,
       sum:0,
-      isLoading: false
+      isLoading: false,
+      sex: "",
+      age: -1
     }
     
     var firebaseConfig = {
@@ -41,7 +43,6 @@ class App extends Component {
       //console.log(response.body.json());
     })
     .then((myJson) => {
-      console.log(myJson)
       this.setState({ values: myJson.data, cv2Image: myJson.photo })
       var currentsum = 0
       myJson.data.forEach(value => {
@@ -51,23 +52,23 @@ class App extends Component {
       var all = []
       var averageOfDatabase =0;
 
-      firebase.database().ref('distance').once('value').then(snapshot => {
+      firebase.database().ref(this.state.sex + this.state.age).once('value').then(snapshot => {
         var databasesum = snapshot.val().sum
         var databasetotal = snapshot.val().total
-        firebase.database().ref('distance').set({
+        firebase.database().ref(this.state.sex + this.state.age).set({
           total: databasetotal+1,
           sum: databasesum+currentsum
         })
         averageOfDatabase = (databasesum+currentsum) /(databasetotal+1)
-        firebase.database().ref('all').once('value').then(snapshot => {
+        firebase.database().ref(this.state.sex + this.state.age +'all').once('value').then(snapshot => {
           for (var key in snapshot.val()){
             standarDiv += Math.pow(snapshot.val()[key]-averageOfDatabase,2)
           }
-          standarDiv = standarDiv / databasetotal
+          standarDiv = Math.sqrt(standarDiv / databasetotal)
           this.setState({average: averageOfDatabase, deviation: standarDiv, sum:currentsum,isLoading:false})
         })
         })
-        firebase.database().ref('all').push(currentsum)
+        firebase.database().ref(this.state.sex + this.state.age + 'all').push(currentsum)
     });
 
     this.setState({
@@ -89,25 +90,104 @@ class App extends Component {
     return (
       <div className="App" id="header">
       <a id="logo">Average Face Analyzer</a>
-      <Dropzone onDrop={this.onDrop}>
-        {({getRootProps, getInputProps, isDragActive}) => {
-          return (
-            <div
-              {...getRootProps()}
-              className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
-            >
-              <input {...getInputProps()} />
-              <ul id="menu">
-              {
-                isDragActive ?
-                  <li><a><span>Drop files here...</span></a></li> :
-                  <li><a><span>Click Here or drag your image!</span></a></li>
-              }
-              </ul>
+<div class="continput">
+    <ul>
+        <li>
+            <input type="radio" name="1" onClick={() => this.setState({sex:"male"})}/>
+            <label style={{fontWeight: "bold", fontSize: "20px"}}>Male</label>
+            <div class="bullet">
+                <div class="line zero"></div>
+                <div class="line one"></div>
+                <div class="line two"></div>
+                <div class="line three"></div>
+                <div class="line four"></div>
+                <div class="line five"></div>
+                <div class="line six"></div>
+                <div class="line seven"></div>
             </div>
-          )
-        }}
-      </Dropzone>
+        </li>
+        <li>
+            <input type="radio" name="1" onClick={() => this.setState({sex:"female"})}/>
+            <label style={{fontWeight: "bold", fontSize: "20px"}}>Female</label>
+            <div class="bullet">
+                <div class="line zero"></div>
+                <div class="line one"></div>
+                <div class="line two"></div>
+                <div class="line three"></div>
+                <div class="line four"></div>
+                <div class="line five"></div>
+                <div class="line six"></div>
+                <div class="line seven"></div>
+            </div>
+        </li>
+    </ul>
+    <ul>
+        <li>
+            <input type="radio" name="2" onClick={() => this.setState({age:"young"})}/>
+            <label style={{fontWeight: "bold", fontSize: "20px"}}>18-30</label>
+            <div class="bullet">
+                <div class="line zero"></div>
+                <div class="line one"></div>
+                <div class="line two"></div>
+                <div class="line three"></div>
+                <div class="line four"></div>
+                <div class="line five"></div>
+                <div class="line six"></div>
+                <div class="line seven"></div>
+            </div>
+        </li>
+        <li>
+            <input type="radio" name="2" onClick={() => this.setState({age:"middle"})}/>
+            <label style={{fontWeight: "bold", fontSize: "20px"}}>31-50</label>
+            <div class="bullet">
+                <div class="line zero"></div>
+                <div class="line one"></div>
+                <div class="line two"></div>
+                <div class="line three"></div>
+                <div class="line four"></div>
+                <div class="line five"></div>
+                <div class="line six"></div>
+                <div class="line seven"></div>
+            </div>
+        </li>
+        <li>
+            <input type="radio" name="2" onClick={() => this.setState({age:"old"})}/>
+            <label style={{fontWeight: "bold", fontSize: "20px"}}>51+</label>
+            <div class="bullet">
+                <div class="line zero"></div>
+                <div class="line one"></div>
+                <div class="line two"></div>
+                <div class="line three"></div>
+                <div class="line four"></div>
+                <div class="line five"></div>
+                <div class="line six"></div>
+                <div class="line seven"></div>
+            </div>
+        </li>
+    </ul>
+    {
+        this.state.sex == "" || this.state.age == -1 ? null :
+              <Dropzone style={{margin: "auto"}} onDrop={this.onDrop}>
+              {({getRootProps, getInputProps, isDragActive}) => {
+                return (
+                  <div
+                    {...getRootProps()}
+                    className={classNames('dropzone', {'dropzone--isActive': isDragActive})}
+                  >
+                    <input {...getInputProps()} />
+                    <ul id="menu">
+                    {
+                      isDragActive ?
+                        <li><a><span>Drop files here...</span></a></li> :
+                        <li><a><span>Click Here or drag your image!</span></a></li>
+                    }
+                    </ul>
+                  </div>
+                )
+              }}
+            </Dropzone>
+      }
+</div>     
       {
         files.map(file => (
           <div>
